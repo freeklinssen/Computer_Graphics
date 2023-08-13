@@ -8,6 +8,8 @@ using namespace std;
 
 // Globals
 
+int i = 0;
+
 // This is the list of points (3D vectors)
 vector<Vector3f> vecv;
 
@@ -30,6 +32,61 @@ inline void glNormal(const Vector3f &a)
 { glNormal3fv(a); }
 
 
+// This function is responsible for displaying the object.
+void drawScene(void)
+{
+
+    // Clear the rendering window
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Rotate the image
+    glMatrixMode( GL_MODELVIEW );  // Current matrix affects objects positions
+    glLoadIdentity();              // Initialize to the identity
+
+    // Position the camera at [0,0,5], looking at [0,0,0],
+    // with [0,1,0] as the up direction.
+    gluLookAt(0.0, 0.0, 5.0,
+              0.0, 0.0, 0.0,
+              0.0, 1.0, 0.0);
+
+    // Set material properties of object
+
+	// Here are some colors you might use - feel free to add more
+    GLfloat diffColors[4][4] = { {0.5, 0.5, 0.9, 1.0},
+                                 {0.9, 0.5, 0.5, 1.0},
+                                 {0.5, 0.9, 0.3, 1.0},
+                                 {0.3, 0.8, 0.9, 1.0} };
+    
+	// Here we use the first color entry as the diffuse color
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diffColors[i%4]);
+
+	// Define specular color and shininess
+    GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat shininess[] = {100.0};
+
+	// Note that the specular color and shininess can stay constant
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specColor);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+  
+    // Set light properties
+
+    // Light color (RGBA)
+    GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
+    // Light position
+	GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
+
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
+    glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
+
+	// This GLUT method draws a teapot.  You should replace
+	// it with code which draws the object you loaded.
+
+	glutSolidTeapot(1.0);
+    
+    // Dump the image to the screen.
+    glutSwapBuffers();
+}
+
 // This function is called whenever a "Normal" key press is received.
 void keyboardFunc( unsigned char key, int x, int y )
 {
@@ -40,6 +97,8 @@ void keyboardFunc( unsigned char key, int x, int y )
         break;
     case 'c':
         // add code to change color here
+        drawScene();
+        i++;
 		cout << "Unhandled key press " << key << "." << endl; 
         break;
     default:
@@ -78,62 +137,6 @@ void specialFunc( int key, int x, int y )
     glutPostRedisplay();
 }
 
-// This function is responsible for displaying the object.
-void drawScene(void)
-{
-    int i;
-
-    // Clear the rendering window
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Rotate the image
-    glMatrixMode( GL_MODELVIEW );  // Current matrix affects objects positions
-    glLoadIdentity();              // Initialize to the identity
-
-    // Position the camera at [0,0,5], looking at [0,0,0],
-    // with [0,1,0] as the up direction.
-    gluLookAt(0.0, 0.0, 5.0,
-              0.0, 0.0, 0.0,
-              0.0, 1.0, 0.0);
-
-    // Set material properties of object
-
-	// Here are some colors you might use - feel free to add more
-    GLfloat diffColors[4][4] = { {0.5, 0.5, 0.9, 1.0},
-                                 {0.9, 0.5, 0.5, 1.0},
-                                 {0.5, 0.9, 0.3, 1.0},
-                                 {0.3, 0.8, 0.9, 1.0} };
-    
-	// Here we use the first color entry as the diffuse color
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diffColors[0]);
-
-	// Define specular color and shininess
-    GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat shininess[] = {100.0};
-
-	// Note that the specular color and shininess can stay constant
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specColor);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-  
-    // Set light properties
-
-    // Light color (RGBA)
-    GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
-    // Light position
-	GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
-
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
-    glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
-
-	// This GLUT method draws a teapot.  You should replace
-	// it with code which draws the object you loaded.
-	glutSolidTeapot(1.0);
-    
-    // Dump the image to the screen.
-    glutSwapBuffers();
-
-
-}
 
 // Initialize OpenGL's rendering modes
 void initRendering()
