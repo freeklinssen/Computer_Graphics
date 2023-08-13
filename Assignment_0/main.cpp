@@ -9,6 +9,8 @@ using namespace std;
 // Globals
 
 int i = 0;
+// Light position
+GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
 
 // This is the list of points (3D vectors)
 vector<Vector3f> vecv;
@@ -30,6 +32,55 @@ inline void glVertex(const Vector3f &a)
 
 inline void glNormal(const Vector3f &a) 
 { glNormal3fv(a); }
+
+
+// This function is called whenever a "Normal" key press is received.
+void keyboardFunc( unsigned char key, int x, int y )
+{
+    switch ( key )
+    {
+    case 27: // Escape key
+        exit(0);
+        break;
+    case 'c':
+        // add code to change color here
+        i++; 
+        break;
+    default:
+        cout << "Unhandled key press " << key << "." << endl;        
+    }
+
+	// this will refresh the screen so that the user sees the color change
+    glutPostRedisplay();
+}
+
+// This function is called whenever a "Special" key press is received.
+// Right now, it's handling the arrow keys.
+void specialFunc( int key, int x, int y )
+{
+    switch ( key )
+    {
+    case GLUT_KEY_UP:
+        // add code to change light position
+		Lt0pos[1] += 0.5;
+		break;
+    case GLUT_KEY_DOWN:
+        // add code to change light position
+		Lt0pos[1]-= 0.5;
+		break;
+    case GLUT_KEY_LEFT:
+        // add code to change light position
+		Lt0pos[0] -= 0.5;
+		break;
+    case GLUT_KEY_RIGHT:
+        // add code to change light position
+		Lt0pos[0] +=0.5;
+		break;
+    }
+
+	// this will refresh the screen so that the user sees the light position
+    glutPostRedisplay();
+}
 
 
 // This function is responsible for displaying the object.
@@ -72,8 +123,6 @@ void drawScene(void)
 
     // Light color (RGBA)
     GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
-    // Light position
-	GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
 
     glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
     glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
@@ -85,56 +134,6 @@ void drawScene(void)
     
     // Dump the image to the screen.
     glutSwapBuffers();
-}
-
-// This function is called whenever a "Normal" key press is received.
-void keyboardFunc( unsigned char key, int x, int y )
-{
-    switch ( key )
-    {
-    case 27: // Escape key
-        exit(0);
-        break;
-    case 'c':
-        // add code to change color here
-        drawScene();
-        i++;
-		cout << "Unhandled key press " << key << "." << endl; 
-        break;
-    default:
-        cout << "Unhandled key press " << key << "." << endl;        
-    }
-
-	// this will refresh the screen so that the user sees the color change
-    glutPostRedisplay();
-}
-
-// This function is called whenever a "Special" key press is received.
-// Right now, it's handling the arrow keys.
-void specialFunc( int key, int x, int y )
-{
-    switch ( key )
-    {
-    case GLUT_KEY_UP:
-        // add code to change light position
-		cout << "Unhandled key press: up arrow." << endl;
-		break;
-    case GLUT_KEY_DOWN:
-        // add code to change light position
-		cout << "Unhandled key press: down arrow." << endl;
-		break;
-    case GLUT_KEY_LEFT:
-        // add code to change light position
-		cout << "Unhandled key press: left arrow." << endl;
-		break;
-    case GLUT_KEY_RIGHT:
-        // add code to change light position
-		cout << "Unhandled key press: right arrow." << endl;
-		break;
-    }
-
-	// this will refresh the screen so that the user sees the light position
-    glutPostRedisplay();
 }
 
 
