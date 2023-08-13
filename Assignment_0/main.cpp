@@ -3,14 +3,18 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include "vecmath.h"
+#include <vecmath.h>
+#include "Vector3f.h"
 using namespace std;
+
 
 // Globals
 
 int i = 0;
+
 // Light position
 GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
+
 
 // This is the list of points (3D vectors)
 vector<Vector3f> vecv;
@@ -23,6 +27,7 @@ vector<vector<unsigned> > vecf;
 
 
 // You will need more global variables to implement color and position changes
+#define MAX_BUFFER_SIZE 9000
 
 
 // These are convenience functions which allow us to call OpenGL 
@@ -129,8 +134,31 @@ void drawScene(void)
 
 	// This GLUT method draws a teapot.  You should replace
 	// it with code which draws the object you loaded.
+    
+    int a,c,d,f,g,i;
+    glBegin(GL_TRIANGLES);
+    std::cout << vecv.size() << std::endl;
+    std::cout << vecf.size() << std::endl;
+    for (unsigned int z=0; z<vecf.size(); z++){
+        
+        a= vecf[z][0];
+        c= vecf[z][2];
+        d= vecf[z][3];
+        f= vecf[z][5];
+        g= vecf[z][6];
+        i= vecf[z][8];
 
-	glutSolidTeapot(1.0);
+        glNormal3d(vecn[c-1][0], vecn[c-1][1], vecn[c-1][2]);
+        glVertex3d(vecv[a-1][0], vecv[a-1][1], vecv[a-1][2]);
+        glNormal3d(vecn[f-1][0], vecn[f-1][1], vecn[f-1][2]);
+        glVertex3d(vecv[d-1][0], vecv[d-1][1], vecv[d-1][2]);
+        glNormal3d(vecn[i-1][0], vecn[i-1][1], vecn[i-1][2]);
+        glVertex3d(vecv[g-1][0], vecv[g-1][1], vecv[g-1][2]);
+
+    }
+    glEnd();
+    
+	//glutSolidTeapot(1.0);
     
     // Dump the image to the screen.
     glutSwapBuffers();
@@ -163,9 +191,52 @@ void reshapeFunc(int w, int h)
     gluPerspective(50.0, 1.0, 1.0, 100.0);
 }
 
+
 void loadInput()
 {
 	// load the OBJ file here
+    char buffer[MAX_BUFFER_SIZE];
+    while(cin.getline(buffer, MAX_BUFFER_SIZE)){
+
+        stringstream ss(buffer);
+        Vector3f v;
+        vector<unsigned> f;
+        string s;
+         
+        ss >> s;
+        ss >> v[0] >> v[1] >> v[2];
+
+
+        if (s== "v") {
+            vecv.push_back(v);
+        }
+
+        if (s=="vn") {
+            vecn.push_back(v);
+        }
+
+        if (s=="f"){
+            istringstream iss(buffer);
+            string token;
+
+            cout << buffer << std::endl;
+            
+            while (iss >> token){
+                
+                istringstream tokenStream(token);
+                string num;
+                while (getline(tokenStream, num, '/')) {
+                    if (token == "f") {
+                        continue;  // Skip the "f" identifier
+                    }
+                    f.push_back(std::stoi(num));
+                }
+
+            } 
+            std::cout << f[8] << std::endl;
+            vecf.push_back(f);
+        }
+    }
 }
 
 // Main routine.
