@@ -7,7 +7,6 @@ INCFLAGS += -I./include/vecmath
 
 LINKFLAGS  = -lglut -framework OpenGL
 
-
 CFLAGS    = -O2
 SRCS      = main.cpp vecmath/Vector3f.cpp vecmath/Vector2f.cpp
 OBJS      = $(SRCS:.cpp=.o)
