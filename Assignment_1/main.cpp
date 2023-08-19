@@ -130,6 +130,7 @@ namespace
         //glutPostRedisplay();
     }
 
+
     //  Called when mouse button is pressed.
     void mouseFunc(int button, int state, int x, int y)
     {
