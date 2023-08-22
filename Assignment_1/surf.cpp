@@ -20,7 +20,7 @@ namespace
 }
 
 Surface makeSurfRev(const Curve &profile, unsigned steps)
-{
+{   Surface surface2;
     Surface surface;
     Vector3f tmp_vertices;  
     Vector3f tmp_normals;  
@@ -29,47 +29,53 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
     if (!checkFlat(profile))
     {
         cerr << "surfRev profile curve must be flat on xy plane." << endl;
-        //exit(0);
+        exit(0);
     }
      
     //TODO: Here you should build the surface.  See surf.h for details.    
-    /*
-    int k = 0;
-    for(int i=0; i<steps; ++i)
+    Tup3u tmp;
+    
+    
+    for(int i=0; i< steps; ++i)
     {
         float t = 2.0f * M_PI * float( i ) / steps;
-        Matrix4f rotation_matrix(cos(t)f, 0.0f, sin(t)f, 0.0f,
+
+        Matrix4f rotation_matrix(cos(t), 0.0f, sin(t), 0.0f,
                                 0.0f, 1.0f, 0.0f, 0.0f, 
-                                -sin(t), 0.0f, cos(t)f, 0.0f,
+                                -sin(t), 0.0f, cos(t), 0.0f,
                                 0.0f, 0.0f, 0.0f, 1.0f);
 
-        Matrix3f top_left_rotation_matrix(cos(t)f, 0.0f, sin(t)f,
-                                            0.0f, 1.0f, 0.0f, 
-                                            -sin(t), 0.0f, cos(t));
-                            
-
-
-        for(int j=0; j<profile.size(); ++j)
+        Matrix3f top_left_rotation_matrix(cos(t), 0.0f, sin(t),
+                                      0.0f, 1.0f, 0.0f, 
+                                     -sin(t), 0.0f, cos(t));
+        
+        for(int j=0; j < profile.size(); ++j)
         {
-            tmp_vertices = profile[j].V;
-            tmp_vertices[2]= -sin(t)*tmp_vertices[0]; //Z-axis
-            tmp_vertices[0]= cos(t)*tmp_vertices[0]; //X-axis
-            tmp_vertices[1]= 1 * tmp_vertices[1]; //Y-axis
-            surface.VV.push_back(tmp_vertices);
-            k++;
+            Vector4f tmp_vertices = Vector4f(profile[j].V[0], profile[j].V[1], profile[j].V[2], 1.f);
+            tmp_vertices = rotation_matrix * tmp_vertices;
+            surface.VV.push_back(Vector3f(tmp_vertices[0], tmp_vertices[1], tmp_vertices[2]));
 
-            tmp_normals = profile[j].N;
-            tmp_vertices[2]= -sin(t)*tmp_vertices[0]; //Z-axis
-            tmp_vertices[0]= cos(t)*tmp_vertices[0]; //X-axis
-            tmp_vertices[1]= 1 * tmp_vertices[1]; //Y-axis
-            surface.VV.push_back(tmp_vertices);
-            k++;
-
-            profile.
-
+            Vector3f tmp_normals = top_left_rotation_matrix * profile[j].N;
+            surface.VN.push_back(-1 * tmp_normals);
         }    
     }
-    */
+
+    for(int i; i < profile.size(); ++i)
+    {
+        for(int j=0; j < steps; ++j)
+        {
+            tmp = Tup3u(unsigned((j* profile.size()) + i), unsigned(((j+1)* profile.size()) + i+1), unsigned(((j+1)* profile.size()) + i));
+            surface.VF.push_back(tmp);
+
+            tmp = Tup3u(unsigned((j* profile.size()) + i), unsigned(((j)* profile.size()) + i+1), unsigned(((j+1)* profile.size()) + i+1));
+            surface.VF.push_back(tmp);
+        }
+
+        
+    }
+
+    cerr << "makesurfRev done" << endl;
+
     return surface;
 }
 

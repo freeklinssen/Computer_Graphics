@@ -89,15 +89,6 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
                              0.0f, 0.0f, 6.0f, -9.0f,
                              0.0f, 0.0f, 0.0f, 3.0f);
 
-    Matrix3f top_left_rotation_matrix(cos(0), 0.0f, sin(0),
-                                    0.0f, 1.0f, 0.0f, 
-                                    -sin(0), 0.0f, cos(0));
-
-    Matrix4f rotatM = Matrix4f::rotateY(0);
-	Matrix3f rotatMsub = rotatM.getSubmatrix3x3(0,0);
-    top_left_rotation_matrix = top_left_rotation_matrix.transposed();
-	top_left_rotation_matrix = top_left_rotation_matrix.inverse();
-
 
     Vector3f Binorm;
     Vector3f Prev_Binorm;
@@ -144,8 +135,6 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
             k++;
         }
     }
-
-    
     return Bezier_curve;
 }
 
