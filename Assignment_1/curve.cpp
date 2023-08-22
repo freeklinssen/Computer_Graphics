@@ -88,10 +88,20 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
                              0.0f, 3.0f, -12.0f, 9.0f, 
                              0.0f, 0.0f, 6.0f, -9.0f,
                              0.0f, 0.0f, 0.0f, 3.0f);
-    
+
+    Matrix3f top_left_rotation_matrix(cos(0), 0.0f, sin(0),
+                                    0.0f, 1.0f, 0.0f, 
+                                    -sin(0), 0.0f, cos(0));
+
+    Matrix4f rotatM = Matrix4f::rotateY(0);
+	Matrix3f rotatMsub = rotatM.getSubmatrix3x3(0,0);
+    top_left_rotation_matrix = top_left_rotation_matrix.transposed();
+	top_left_rotation_matrix = top_left_rotation_matrix.inverse();
+
+
     Vector3f Binorm;
     Vector3f Prev_Binorm;
-    
+    Vector4f tmp;
 
     int k = 0;
     for(int i=0; i<P.size()-3; i+=3)
@@ -115,28 +125,32 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
             float t = float(j)/steps;
             Vector4f Monobase(1, t, t*t, t*t*t);
 
+            tmp = control_points*bezierMat*Monobase;
+            Bezier_curve[k].V = Vector3f(tmp[0],
+                                         tmp[1],
+                                         tmp[2]);
 
-            Bezier_curve[k].V = Vector3f((control_points*bezierMat*Monobase)[0],
-                                         (control_points*bezierMat*Monobase)[1],
-                                         (control_points*bezierMat*Monobase)[2]);
 
+            tmp = control_points*bezierMat_prime*Monobase;
+            Bezier_curve[k].T = Vector3f(tmp[0],
+                                         tmp[1],
+                                         tmp[2]).normalized(); 
 
-            Bezier_curve[k].T = Vector3f((control_points*bezierMat_prime*Monobase)[0],
-                                         (control_points*bezierMat_prime*Monobase)[1],
-                                         (control_points*bezierMat_prime*Monobase)[2]).normalized();
+            Bezier_curve[k].N = Vector3f::cross(Binorm, Bezier_curve[k].T).normalized(); 
 
-            Bezier_curve[k].N = Vector3f::cross(Binorm, Bezier_curve[k].T).normalized();    
             Bezier_curve[k].B = Vector3f::cross(Bezier_curve[k].T, Bezier_curve[k].N).normalized();
             Prev_Binorm = Bezier_curve[k].B;
 
             k++;
         }
     }
+
+    
     return Bezier_curve;
 }
 
 
-Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
+Curve evalBspline( const vector< Vector3f >& P, unsigned steps)
 {
     // Check
     if(P.size() < 4)
@@ -144,71 +158,86 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps )
         cerr << "evalBspline must be called with 4 or more control points." << endl;
         exit( 0 );
     }
+
     cerr << "\t>>> evalBSpline has been called with the following input:" << endl;
     cerr << "\t>>> Control points (type vector< Vector3f >): "<< endl;
+
     for( unsigned i = 0; i < P.size(); ++i )
     {
         cerr << "\t>>> " << P[i] << endl;
     }
-
-    // TODO:
-    // It is suggested that you implement this function by changing
-    // basis from B-spline to Bezier.  That way, you can just call
-    // your evalBezier function.
-
-    Matrix4f bezierMat(1.0f, -3.0f, 3.0f, -1.0f,
-                        0.0f, 3.0f, -6.0f, 3.0f, 
-                        0.0f, 0.0f, 3.0f, -3.0f,
-                        0.0f, 0.0f, 0.0f, 1.0f);
-    
-    //make an inverse bezier matrix
-    bool singular;
-    Matrix4f bezierMat_inv  = bezierMat.inverse(&singular);
-
-    Matrix4f bsplineMat(1.0f/6, -3.0f/6, 3.0f/6, -1.0f/6,
-                        4.0f/6, 0.0f, -6.0f/6, 3.0f/6, 
-                        1.0f/6, 3.0f/6, 3.0f/6, -3.0f/6,
-                        0.0f, 0.0f, 0.0f, 1.0f/6);
     
 
-    Curve Spline_curve;
+    int seg;			//Determine number of segments if 4 or 
+				//more control points
+    if (P.size() == 4){
+        seg = 1;
+    }
+    else{
+        seg = (P.size()-3);
+    }
 
-    for(int i; i<P.size()-3; ++i)
+    Curve b_spline_curve((seg)*(steps+1));
+
+    //V Matrix
+    Matrix4f bspline_mat(1.f/6, -3.f/6, 3.f/6 , -1.f/6, 
+                        4.f/6, 0.f   , -6.f/6, 3.f/6, 
+                        1.f/6, 3.f/6 , 3.f/6 , -3.f/6, 
+                        0.f  , 0.f   , 0.f   , 1.f/6);
+    //T Matrix
+    Matrix4f bspline_mat_prime(-3.f/6, 6.f/6  , -3.f/6, 0.f/6, 
+                                 0.f/6, -12.f/6, 9.f/6 , 0.f/6,
+                                 3.f/6, 6.f/6  , -9.f/6, 0.f/6, 
+                                 0.f  , 0.f    , 0.f   , 3.f/6);
+    Vector3f Binorm;
+    Vector3f Prev_Binorm;
+    Vector4f tmp;
+
+    int k = 0;
+    for(unsigned i = 0; i < (P.size()-3); ++i)
     {
-        Matrix4f spline_control_points (P[i][0], P[i+1][0], P[i+2][0], P[i+3][0],
-                                        P[i][1], P[i+1][1], P[i+2][1], P[i+3][1], 
-                                        P[i][2], P[i+1][2], P[i+2][2], P[i+3][2],
-                                        0.0f, 0.0f, 0.0f, 0.0f);
-        
-        Matrix4f beizer_control_points = spline_control_points * bsplineMat * bezierMat_inv;
-
-        // set i back in the right format:
-        vector<Vector3f> points_in_bezier;
-        Vector3f temp;
-        for(int i=0; i<4; ++i)
-        {
-            Vector4f col = beizer_control_points.getCol(i);
-            temp[0] = col[0];
-            temp[1] = col[1];
-            temp[2] = col[2];  
-            points_in_bezier.push_back(temp);
+        if(i == 0){
+            Binorm = Vector3f(0.0f, 0.0f, 1.0f);
         }
+        else{
+            Binorm = Prev_Binorm;
+        }
+        //Point Matrix
+        Matrix4f control_points(P[i][0], P[i+1][0], P[i+2][0], P[i+3][0], 
+                                P[i][1], P[i+1][1], P[i+2][1], P[i+3][1], 
+                                P[i][2], P[i+1][2], P[i+2][2], P[i+3][2], 
+                                0.f, 0.f, 0.f, 0.f);
 
-        Curve sub_curve(steps);
-        sub_curve = evalBezier(points_in_bezier, steps);
-
-        CurvePoint tmp; 
-        for(int j=0; j<sub_curve.size(); ++j)
+        for(unsigned j = 0; j <= steps; ++j)
         {
-            tmp.V = sub_curve[j].V;
-            tmp.T = sub_curve[j].T;
-            tmp.N = sub_curve[j].N;
-            tmp.B = sub_curve[j].B;
-            Spline_curve.push_back(tmp);
+            float t = float(j) / steps;
+
+	        //polynomial (t) Matrix
+	        Vector4f Monobase(1, t, t*t, t*t*t);
+
+            tmp = (control_points*bspline_mat*Monobase);
+            b_spline_curve[k].V = Vector3f(tmp[0],
+                                         tmp[1],
+                                         tmp[2]);
+
+
+            tmp = control_points*bspline_mat_prime*Monobase;
+            b_spline_curve[k].T = Vector3f(tmp[0],
+                                         tmp[1],
+                                         tmp[2]).normalized(); 
+
+            b_spline_curve[k].N = Vector3f::cross(Binorm, b_spline_curve[k].T).normalized(); 
+
+            b_spline_curve[k].B = Vector3f::cross(b_spline_curve[k].T, b_spline_curve[k].N).normalized();
+            Prev_Binorm = b_spline_curve[k].B;
+
+            k++;
         }
     }
-    return Spline_curve;
+    return b_spline_curve;
+
 }
+
 
 Curve evalCircle( float radius, unsigned steps )
 {
@@ -217,6 +246,7 @@ Curve evalCircle( float radius, unsigned steps )
     
     // Preallocate a curve with steps+1 CurvePoints
     Curve R(steps+1);
+    cerr << steps << endl;
 
     // Fill it in counterclockwise
     for( unsigned i = 0; i <= steps; ++i )

@@ -22,17 +22,54 @@ namespace
 Surface makeSurfRev(const Curve &profile, unsigned steps)
 {
     Surface surface;
+    Vector3f tmp_vertices;  
+    Vector3f tmp_normals;  
+
     
     if (!checkFlat(profile))
     {
         cerr << "surfRev profile curve must be flat on xy plane." << endl;
-        exit(0);
+        //exit(0);
     }
+     
+    //TODO: Here you should build the surface.  See surf.h for details.    
+    /*
+    int k = 0;
+    for(int i=0; i<steps; ++i)
+    {
+        float t = 2.0f * M_PI * float( i ) / steps;
+        Matrix4f rotation_matrix(cos(t)f, 0.0f, sin(t)f, 0.0f,
+                                0.0f, 1.0f, 0.0f, 0.0f, 
+                                -sin(t), 0.0f, cos(t)f, 0.0f,
+                                0.0f, 0.0f, 0.0f, 1.0f);
 
-    // TODO: Here you should build the surface.  See surf.h for details.
+        Matrix3f top_left_rotation_matrix(cos(t)f, 0.0f, sin(t)f,
+                                            0.0f, 1.0f, 0.0f, 
+                                            -sin(t), 0.0f, cos(t));
+                            
 
-    cerr << "\t>>> makeSurfRev called (but not implemented).\n\t>>> Returning empty surface." << endl;
- 
+
+        for(int j=0; j<profile.size(); ++j)
+        {
+            tmp_vertices = profile[j].V;
+            tmp_vertices[2]= -sin(t)*tmp_vertices[0]; //Z-axis
+            tmp_vertices[0]= cos(t)*tmp_vertices[0]; //X-axis
+            tmp_vertices[1]= 1 * tmp_vertices[1]; //Y-axis
+            surface.VV.push_back(tmp_vertices);
+            k++;
+
+            tmp_normals = profile[j].N;
+            tmp_vertices[2]= -sin(t)*tmp_vertices[0]; //Z-axis
+            tmp_vertices[0]= cos(t)*tmp_vertices[0]; //X-axis
+            tmp_vertices[1]= 1 * tmp_vertices[1]; //Y-axis
+            surface.VV.push_back(tmp_vertices);
+            k++;
+
+            profile.
+
+        }    
+    }
+    */
     return surface;
 }
 
