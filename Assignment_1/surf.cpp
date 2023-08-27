@@ -20,23 +20,20 @@ namespace
 }
 
 Surface makeSurfRev(const Curve &profile, unsigned steps)
-{   Surface surface2;
-    Surface surface;
-    Vector3f tmp_vertices;  
-    Vector3f tmp_normals;  
-
-    
+{   
     if (!checkFlat(profile))
     {
         cerr << "surfRev profile curve must be flat on xy plane." << endl;
         exit(0);
     }
      
-    //TODO: Here you should build the surface.  See surf.h for details.    
+    //TODO: Here you should build the surface.  See surf.h for details.   
+    Surface surface;
+    Vector3f tmp_vertices;  
+    Vector3f tmp_normals;   
     Tup3u tmp;
     
-    
-    for(int i=0; i< steps; ++i)
+    for(int i=0; i <= steps; ++i)
     {
         float t = 2.0f * M_PI * float( i ) / steps;
 
@@ -60,7 +57,7 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
         }    
     }
 
-    for(int i; i < profile.size(); ++i)
+    for(int i=0; i < (profile.size()-1); ++i)
     {
         for(int j=0; j < steps; ++j)
         {
@@ -69,17 +66,33 @@ Surface makeSurfRev(const Curve &profile, unsigned steps)
 
             tmp = Tup3u(unsigned((j* profile.size()) + i), unsigned(((j)* profile.size()) + i+1), unsigned(((j+1)* profile.size()) + i+1));
             surface.VF.push_back(tmp);
-        }
-
-        
+        }  
     }
 
     cerr << "makesurfRev done" << endl;
-
     return surface;
 }
 
-Surface makeGenCyl(const Curve &profile, const Curve &sweep )
+
+Curve translate_rotate_profile(const Curve &profile, const Matrix4f &matrix)
+{
+    Curve resulting_profile(profile.size());
+    Matrix3f top_left_rotation_matrix = matrix.getSubmatrix3x3(0,0);
+
+    for(int i=0; i<profile.size(); ++i)
+    {
+        Vector4f tmp = Vector4f(profile[i].V[0], profile[i].V[1], profile[i].V[2], 1.f);
+        tmp = matrix * tmp;
+        resulting_profile[i].V = (Vector3f(tmp[0], tmp[1], tmp[2]));
+
+        Vector3f tmp_normals = top_left_rotation_matrix * profile[i].N;
+        resulting_profile[i].N = (tmp_normals);
+    } 
+    return resulting_profile;
+}
+
+
+Surface makeGenCyl(const Curve &profile,  const Curve &sweep)
 {
     Surface surface;
 
@@ -89,10 +102,45 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep )
         exit(0);
     }
 
-    // TODO: Here you should build the surface.  See surf.h for details.
+    for(int i=0; i< sweep.size(); ++i)
+    {
+        Matrix4f matrix(sweep[i].N[0], sweep[i].B[0], sweep[i].T[0], sweep[i].V[0], 
+			            sweep[i].N[1], sweep[i].B[1], sweep[i].T[1], sweep[i].V[1], 
+			            sweep[i].N[2], sweep[i].B[2], sweep[i].T[2], sweep[i].V[2], 
+			            0.f, 0.f, 0.f, 1.f);
 
-    cerr << "\t>>> makeGenCyl called (but not implemented).\n\t>>> Returning empty surface." <<endl;
+        Curve resulting_profile = translate_rotate_profile(profile, matrix);
 
+        for (int j=0; j < resulting_profile.size(); ++j)
+        {
+            surface.VV.push_back(resulting_profile[j].V);
+            surface.VN.push_back(-1 * resulting_profile[j].N);
+        }
+    }
+
+    Tup3u tmp;
+
+    for(int i=0; i< (sweep.size()-1); ++i)
+    {
+        for(int j=0; j< (profile.size()-1); ++j)
+        {
+            tmp = Tup3u(unsigned((i* profile.size()) + j), unsigned(((i+1)* profile.size()) + j+1), unsigned(((i+1)* profile.size()) + j));
+            surface.VF.push_back(tmp);
+
+            tmp = Tup3u(unsigned((i* profile.size()) + j), unsigned((i* profile.size()) + j+1), unsigned(((i+1)* profile.size()) + j+1));
+            surface.VF.push_back(tmp);
+        }
+    }
+    
+    for(int j=0; j< (profile.size()-1); ++j)
+    {
+        tmp = Tup3u(unsigned(((sweep.size()-1)*profile.size()) + j), unsigned((0) + j+1), unsigned((0) + j));
+        surface.VF.push_back(tmp);
+
+        tmp = Tup3u(unsigned(((sweep.size()-1)*profile.size()) + j), unsigned(((sweep.size()-1)*profile.size()) + j+1), unsigned((0) + j+1));
+        surface.VF.push_back(tmp);
+    }
+    
     return surface;
 }
 

@@ -182,6 +182,11 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps)
     Vector3f Prev_Binorm;
     Vector4f tmp;
 
+    Vector3f rDirection = Vector3f(0.5f, 0.5f, 0.0f);
+    float radians = 0.5 * M_PI;
+    Matrix4f rotation_matrix = Matrix4f::rotation(rDirection, radians);
+    Matrix3f top_left_rotation_matrix = rotation_matrix.getSubmatrix3x3(0,0);
+
     int k = 0;
     for(unsigned i = 0; i < (P.size()-3); ++i)
     {
@@ -205,12 +210,14 @@ Curve evalBspline( const vector< Vector3f >& P, unsigned steps)
 	        Vector4f Monobase(1, t, t*t, t*t*t);
 
             tmp = (control_points*bspline_mat*Monobase);
+            tmp = Vector4f(tmp[0], tmp[1], tmp[2], 1.0f);
+            //tmp = rotation_matrix * tmp;
             b_spline_curve[k].V = Vector3f(tmp[0],
                                          tmp[1],
                                          tmp[2]);
 
-
             tmp = control_points*bspline_mat_prime*Monobase;
+            //tmp = rotation_matrix * tmp;
             b_spline_curve[k].T = Vector3f(tmp[0],
                                          tmp[1],
                                          tmp[2]).normalized(); 
