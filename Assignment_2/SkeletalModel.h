@@ -43,10 +43,12 @@ public:
 	void loadSkeleton( const char* filename );
 
 	// 1.1. Implement this method with a recursive helper to draw a sphere at each joint.
-	void drawJoints( );
+	void TJH_for_joints(Joint *joint);
+	void drawJoints();
 
 	// 1.2. Implement this method a recursive helper to draw a box between each pair of joints
-	void drawSkeleton( );
+	void TJH_for_bones(Joint *joint);
+	void drawSkeleton();
 
 	// 1.3. Implement this method to handle changes to your skeleton given
 	// changes in the slider values
@@ -58,10 +60,12 @@ public:
 
 	// 2.3.1. Implement this method to compute a per-joint transform from
 	// world-space to joint space in the BIND POSE.
+	void TJH_for_BindWorldToJointTransforms(Joint *joint);
 	void computeBindWorldToJointTransforms();
 
 	// 2.3.2. Implement this method to compute a per-joint transform from
 	// joint space to world space in the CURRENT POSE.
+	void TJH_for_CurrentJointToWorldTransforms(Joint *joint);
 	void updateCurrentJointToWorldTransforms();
 
 	// 2.3.2. This is the core of SSD.

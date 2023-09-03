@@ -9,7 +9,6 @@
 ##LINKFLAGS  = -lglut -lGL -lGLU
 ##LINKFLAGS += -L /mit/6.837/public/lib -lvecmath
 #LINKFLAGS += -L ~/vecmath/lib -lvecmath
-LINKFLAGS += -lfltk -lfltk_gl
 
 CC        = arch -x86_64 g++
 
@@ -19,6 +18,7 @@ FRAMEWORKS = -framework Glut
 FRAMEWORKS += -framework OpenGL
 
 LINKFLAGS += -L vecmath/lib/ -lvecmath
+LINKFLAGS += -lfltk -lfltk_gl
 
 
 CFLAGS    = -g -O2 -Wall -ansi 
