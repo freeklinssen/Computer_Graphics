@@ -3,8 +3,7 @@
 MatrixStack::MatrixStack()
 {
 	// Initialize the matrix stack with the identity matrix.
-	m_matrices.push_back(Matrix4f::identity());
-	
+	m_matrices.push_back(Matrix4f::identity());	
 }
 
 void MatrixStack::clear()
@@ -17,7 +16,6 @@ void MatrixStack::clear()
 Matrix4f MatrixStack::top()
 {
 	// Return the top of the stack
-	
 	return m_matrices.back();
 }
 

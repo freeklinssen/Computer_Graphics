@@ -14,7 +14,6 @@ void Mesh::load( const char* filename )
 	// Add your code here.
 	ifstream inFile;
 	inFile.open(filename);
-
 	string line;
 
     while(getline(inFile, line)){
@@ -30,8 +29,6 @@ void Mesh::load( const char* filename )
         if (s== "v") {
             bindVertices.push_back(v);
         }
-
-
         if (s=="f"){
             istringstream iss(line);
             string num;
@@ -43,7 +40,6 @@ void Mesh::load( const char* filename )
 				} 
 
                 f.push_back(std::stoi(num));
-                
             } 
             faces.push_back(Tuple3u(f[0], f[1], f[2]));
         }
@@ -61,7 +57,7 @@ void Mesh::draw()
 	// assignment 1, the appearance is "faceted".
 	glBegin(GL_TRIANGLES);
 
-	for(int i=0; i < faces.size(); ++i )
+	for(int i=1; i < (faces.size()-1); ++i)
 	{
 		Vector3f Edge1;
 		Vector3f Edge2;
@@ -86,7 +82,6 @@ void Mesh::loadAttachments( const char* filename, int numJoints )
 
 	ifstream inFile;
 	inFile.open(filename);
-
 	string line;
 
     while(getline(inFile, line)){
@@ -101,7 +96,11 @@ void Mesh::loadAttachments( const char* filename, int numJoints )
 		{			
 			v.push_back(std::stof(num));
 		} 
-		
 		attachments.push_back(v);
     }
+
+//for (const float& number : attachments.back()) {
+//
+//   std::cout << number <<endl;
+//    }	
 }
