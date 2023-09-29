@@ -3,7 +3,8 @@
 
 using namespace std;
 
-SimpleSystem::SimpleSystem()
+// this system draws a circle
+SimpleSystem::SimpleSystem():ParticleSystem(1)
 {
 	m_vVecState.push_back(Vector3f(1.0f, 0.0f, 0.0f));
 }
@@ -26,6 +27,7 @@ vector<Vector3f> SimpleSystem::evalF(vector<Vector3f> state)
 void SimpleSystem::draw()
 {
 		Vector3f pos ;//YOUR PARTICLE POSITION
+		
 		for(int i=0; i<m_vVecState.size(); ++i)
 		{
 			pos = getState()[i];
@@ -34,6 +36,4 @@ void SimpleSystem::draw()
 			glutSolidSphere(0.075f, 10.0f, 10.0f);
 			glPopMatrix();
 		}
-
-	    
 }

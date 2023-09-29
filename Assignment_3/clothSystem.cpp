@@ -24,13 +24,10 @@ clothSystem::clothSystem(int cloth_width,int cloth_hight):PendulumSystem(cloth_w
 		for(int j=0; j<cloth_hight; j++)
 		{
 			//particles
-			//fix one point:
-
-
 			x = i * space_between_particles;
 			z = j * space_between_particles;
-			//&& j==0) || (i==cloth_width-1 && j==cloth_hight-1)
 			
+			//fix some points:
 			if((i==0 && j==0) || (i==cloth_width-1 && j==cloth_hight-1) || (i== cloth_width-1   && j==0) )
 			{
 				particles.push_back(Vector4f(x, start_hight, z, 1.0f));
@@ -42,10 +39,8 @@ clothSystem::clothSystem(int cloth_width,int cloth_hight):PendulumSystem(cloth_w
 			
 
 			// initialize springs
-			// vertical & horozontal
-			
-			
 
+			// vertical & horozontal
 			if(i != (cloth_width-1))
 			{
 				springs.push_back(Vector4f(int(i*cloth_width+j), int((i+1)*cloth_width+j), spring_cons, rest_lenght));
@@ -54,8 +49,6 @@ clothSystem::clothSystem(int cloth_width,int cloth_hight):PendulumSystem(cloth_w
 			{
 				springs.push_back(Vector4f(int(i*cloth_width+j), int(i*cloth_width+(j+1)), spring_cons, rest_lenght));
 			}
-
-			
 
 			//flex_springs
 			if(i < cloth_width-2)
@@ -66,8 +59,6 @@ clothSystem::clothSystem(int cloth_width,int cloth_hight):PendulumSystem(cloth_w
 			{
 				springs.push_back(Vector4f(int(i*cloth_width+j), int(i*cloth_width+(j+2)), spring_cons, rest_lenght*2));
 			}
-
-		
 
 			// shear springs
 			if(i < cloth_width-1 && j < cloth_hight-1)
@@ -80,23 +71,19 @@ clothSystem::clothSystem(int cloth_width,int cloth_hight):PendulumSystem(cloth_w
 			}
 
 			// faces
-
 			if(i < cloth_width-1 && j < cloth_hight-1)
 			{
 			// pointing backwards
 			faces.push_back(Tuple3u(int(i*cloth_width+j), int((i+1)*cloth_width+j), int(i*cloth_width+j+1)));
 			faces.push_back(Tuple3u(int(i*cloth_width+j+1), int((i+1)*cloth_width+j), int((i+1)*cloth_width+j+1)));	
-
 			// pointing forward
 			faces.push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));
 			faces.push_back(Tuple3u(int(i*cloth_width+j+1), int((i+1)*cloth_width+(j+1)), int((i+1)*cloth_width+j)));	
-
-
 			}
 		}
-	
 	}
 
 	initPendulum();
+	
 }
 

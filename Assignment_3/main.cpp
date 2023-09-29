@@ -74,7 +74,6 @@ namespace
         system = new clothSystem(30, 30);		   
     }
 
-
     if(strcmp(argv[2], "E")==0)
     {
         timeStepper = new ForwardEuler();		   
@@ -95,7 +94,6 @@ namespace
   }
 
   // Take a step forward for the particle shower
-
   ///and switch between different timeSteppers
   void stepSystem()
   {

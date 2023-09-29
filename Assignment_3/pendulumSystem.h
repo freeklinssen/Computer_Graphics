@@ -22,6 +22,7 @@ public:
 	void draw();
 
 protected:
+
 	vector<Vector4f> particles;
 	vector<Vector4f> springs;
 	vector<Tuple3u> faces;

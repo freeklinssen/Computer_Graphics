@@ -118,25 +118,6 @@ void PendulumSystem::draw()
 	    		glEnd();
 
     		}
-		
-		}
-		
+		}	
 	}
 }
-
-
-
-/*
-// not needed
-PendulumSystem::initPendulumSystem(vector<Vector4f> Particles, vector<Vector4f> Springs, vector<Tuple3u> Faces)
-{
-	// this is an emergency solution for a simple pendulum.
-	particles = Particles;
-	// spring defenition: (particle_1, particle_2, string_cons, rest_length)
-	springs = Springs;
-
-	faces = Faces;
-	
-	// fill in code for initializing the state based on the number of particles	
-}
-*/

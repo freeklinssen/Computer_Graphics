@@ -8,7 +8,6 @@ using namespace std;
 ///TODO: implement Explicit Euler time integrator here
 void ForwardEuler::takeStep(ParticleSystem* particleSystem, float stepSize)
 {
-
     vector<Vector3f>  new_vVecState; 
     vector<Vector3f> grads;
     vector<Vector3f> state;
@@ -21,10 +20,7 @@ void ForwardEuler::takeStep(ParticleSystem* particleSystem, float stepSize)
         state[i] = state[i] + stepSize*grads[i];
     }
 
-    
     particleSystem -> setState(state);
-
-
 }
 
 ///TODO: implement Trapzoidal rule here
@@ -42,7 +38,6 @@ void Trapzoidal::takeStep(ParticleSystem* particleSystem, float stepSize)
     { 
         euler.push_back(state[i] + stepSize*grads_0[i]);
     }
-
     grads_1 = particleSystem -> evalF(euler);
 
 
@@ -50,6 +45,5 @@ void Trapzoidal::takeStep(ParticleSystem* particleSystem, float stepSize)
     {
         state[i] = state[i] + stepSize*0.5*(grads_0[i] + grads_1[i]);
     }
-
     particleSystem -> setState(state);
 }
