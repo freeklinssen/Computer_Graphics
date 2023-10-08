@@ -20,27 +20,42 @@ public:
 
   }
 	
-  Group( int num_objects ){
-
+  Group( int num_objects )
+  {
+    Num_objects = num_objects;
   }
 
   ~Group(){
    
   }
 
-  virtual bool intersect( const Ray& r , Hit& h , float tmin ) {
-		
-   }
-	
-  void addObject( int index , Object3D* obj ){
+  virtual bool intersect( const Ray& r , Hit& h , float tmin ) 
+  {
+    for(int i=0; i<Num_objects; i++)
+    {
+      objectList[i]->intersect(r, h, tmin);
+    }
 
+    if(h.getMaterial()!= NULL)
+    {
+      return true;
+    }
+    else{return false;}
+  }
+	
+  void addObject( int index ,Object3D* obj )
+  {
+    objectList.push_back(obj);
   }
 
-  int getGroupSize(){ 
-  
+  int getGroupSize()
+  {
+    return Num_objects;
   }
 
  private:
+  int Num_objects;
+  vector<Object3D*> objectList;
 
 };
 

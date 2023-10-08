@@ -20,7 +20,7 @@ public:
     }
 
     virtual void getIllumination( const Vector3f& p, Vector3f& dir, Vector3f& col, float& distanceToLight ) const = 0;
-
+    
 };
 
 class DirectionalLight : public Light

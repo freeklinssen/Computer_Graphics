@@ -305,7 +305,7 @@ Group* SceneParser::parseGroup() {
         } else {
             Object3D *object = parseObject(token);
             assert (object != NULL);
-            answer->addObject(count,object);
+            answer->addObject(count, object);
 	    
             count++;
         }

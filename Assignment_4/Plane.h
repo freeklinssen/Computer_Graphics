@@ -11,14 +11,40 @@ class Plane: public Object3D
 {
 public:
 	Plane(){}
-	Plane( const Vector3f& normal , float d , Material* m):Object3D(m){
+	Plane( const Vector3f& n , float d , Material* material):Object3D(material)
+	{
+		normal = n;
+		D = d;
 	}
+
 	~Plane(){}
-	virtual bool intersect( const Ray& r , Hit& h , float tmin){
-		
+
+	virtual bool intersect( const Ray& r , Hit& h , float tmin)
+	{
+		float t=h.getT();
+		Vector3f origin = r.getOrigin();
+        Vector3f direction = r.getDirection();
+
+		 
+		float denominator = Vector3f::dot(normal, direction);
+
+
+		if(denominator > 0.02)
+		{
+			// calculation for intersection with a plain
+			float t_new = (Vector3f::dot(normal, origin)+D)/denominator;
+
+			if(t_new<t && t_new>tmin)
+			{
+				h.set(t_new, material, normal);
+			}
+		}	
 	}
 
 protected:
+	Vector3f normal; 
+	float D;
+
 };
 #endif //PLANE_H
 		

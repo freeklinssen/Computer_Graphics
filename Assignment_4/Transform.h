@@ -10,17 +10,37 @@ class Transform: public Object3D
 {
 public: 
   Transform(){}
- Transform( const Matrix4f& m, Object3D* obj ):o(obj){
+ Transform( const Matrix4f& m, Object3D* obj):o(obj)
+ {
+  Matrix4f matrix = m;  
+ }
+
+  ~Transform(){}
+
+  virtual bool intersect( const Ray& r , Hit& h , float tmin)
+  {
+    float t=h.getT();
+
+    Vector4f origin4 = Vector4f(r.getOrigin(), 1.0f);
+    Vector4f direction4 = Vector4f(r.getDirection(), 0.0f);
     
-  }
-  ~Transform(){
-  }
-  virtual bool intersect( const Ray& r , Hit& h , float tmin){
-    o->intersect( r , h , tmin);
+    Vector3f transformed_origin = (matrix.inverse() * origin4).xyz();
+    Vector3f transformed_direction = (matrix.inverse() * direction4).xyz();
+
+    Ray transformed_ray = Ray(transformed_origin, transformed_direction);
+    o->intersect(transformed_ray, h, tmin);
+
+    if(h.getT() != t)
+    {
+      Vector4f normal4 = Vector4f(h.getNormal(), 0.0f);
+      Vector3f normal = (matrix.inverse().transposed() * normal4).xyz().normalized();
+      h.setNormal(normal);
+    }
   }
 
  protected:
   Object3D* o; //un-transformed object	
+  Matrix4f matrix;
 };
 
 #endif //TRANSFORM_H

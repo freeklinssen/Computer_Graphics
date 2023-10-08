@@ -14,8 +14,9 @@ public:
 	}
 	virtual ~Object3D(){}
 
-	Object3D( Material* material){
-	this->material = material ; 
+	Object3D( Material* m)
+	{
+		material = m; 
 	}
 	
 	virtual bool intersect( const Ray& r , Hit& h, float tmin) = 0;
@@ -23,7 +24,6 @@ public:
 
 	char* type;
 protected:
-
 	Material* material;
 };
 

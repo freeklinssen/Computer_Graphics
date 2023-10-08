@@ -30,21 +30,64 @@ int main( int argc, char* argv[] )
 	
     
   // First, parse the scene using SceneParser.
+  SceneParser sceneParser = SceneParser(argv[2]);
+  
+  // this one are needed for the first sphere
+  Camera* camera = sceneParser.getCamera();
+  Group* group = sceneParser.getGroup();
+
+  Vector3f ambientlight = sceneParser.getAmbientLight();
+  Vector3f backgroundcolor = sceneParser.getBackgroundColor();
+
   // Then loop over each pixel in the image, shooting a ray
   // through that pixel and finding its intersection with
-  // the scene.  Write the color at the intersection to that
+  // the scene. Write the color at the intersection to that
   // pixel in your output image.
+  int width = atoi(argv[4]);
+  int hight = atoi(argv[5]);
 
+  //initialize the image with its size
+  Image image( width , hight);
 
+  for(int x=0; x< width; x++)
+  {
+    for(int y=0; y<hight; y++)
+    { 
+      //normalize point
+      float x_normalized = (x-0.5*width)/(0.5*width);
+      float y_normalized = (y-0.5*hight)/(0.5*hight); 
 
- 
-  ///TODO: below demonstrates how to use the provided Image class
-  ///Should be removed when you start
-  Vector3f pixelColor (1.0f,0,0);
-  //width and height
-  Image image( 10 , 15 );
-  image.SetPixel( 5,5, pixelColor );
-  image.SaveImage("demo.bmp");
+      Vector2f point = Vector2f(x_normalized, y_normalized);
+
+      //shout ray 
+      Ray ray = camera -> generateRay(point);
+      float tmin = camera -> getTMin();
+      Hit hit;
+
+      // not necessarily needed to multiply with the ambient light
+      Vector3f background = backgroundcolor*sceneParser.getAmbientLight();
+      image.SetAllPixels(background);
+
+      if(group -> intersect(ray, hit, tmin))
+      {
+        Vector3f pixel_color = Vector3f(0.0, 0.0, 0.0);
+        for (int lightidx = 0; lightidx < sceneParser.getNumLights(); lightidx++)
+        {
+          Light* light = sceneParser.getLight(lightidx);
+          Vector3f dirToLight;
+          Vector3f lightColor;
+          float distanceToLight;
+          light -> getIllumination(ray.pointAtParameter(hit.getT()), dirToLight, lightColor, distanceToLight);
+          Vector3f diffuseColor = hit.getMaterial()->Shade( ray, hit,  dirToLight, lightColor);
+
+          pixel_color += diffuseColor;
+        }
+        pixel_color = hit.getMaterial()->getDiffuseColor()*ambientlight;
+        image.SetPixel(x, y, pixel_color);
+      }      
+    } 
+  } 
+  image.SaveImage("Sphere_demo.bmp");
   return 0;
 }
 

@@ -5,6 +5,7 @@
 #include "Ray.h"
 #include <float.h>
 
+//float FLT_MAX = 1000000
 class Material;
 
 class Hit
@@ -38,7 +39,6 @@ public:
     // destructor
     ~Hit()
     {
-    
     }
 
     float getT() const
@@ -62,12 +62,19 @@ public:
         material = m;
         normal = n;
     }
+
+    void setNormal( const Vector3f& n )
+    {
+        normal = n;
+    }
+
 	void setTexCoord(const Vector2f & coord){
 		texCoord = coord;
 		hasTex = true;
 	}
 	bool hasTex;
 	Vector2f texCoord;
+
 private:
 	float t;
     Material* material;
