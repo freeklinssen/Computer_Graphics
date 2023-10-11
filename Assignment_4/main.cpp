@@ -49,13 +49,15 @@ int main( int argc, char* argv[] )
   //initialize the image with its size
   Image image( width , hight);
 
+  image.SetAllPixels(backgroundcolor);
+
   for(int x=0; x< width; x++)
   {
     for(int y=0; y<hight; y++)
     { 
       //normalize point
-      float x_normalized = (x-0.5*width)/(0.5*width);
-      float y_normalized = (y-0.5*hight)/(0.5*hight); 
+      float x_normalized = (float(x)-0.5*width)/(0.5*width);
+      float y_normalized = (float(y)-0.5*hight)/(0.5*hight); 
 
       Vector2f point = Vector2f(x_normalized, y_normalized);
 
@@ -63,14 +65,12 @@ int main( int argc, char* argv[] )
       Ray ray = camera -> generateRay(point);
       float tmin = camera -> getTMin();
       Hit hit;
-
-      // not necessarily needed to multiply with the ambient light
-      Vector3f background = backgroundcolor*sceneParser.getAmbientLight();
-      image.SetAllPixels(background);
-
+      
+      Vector3f pixel_color = Vector3f(0.0, 0.0, 0.0);
       if(group -> intersect(ray, hit, tmin))
       {
-        Vector3f pixel_color = Vector3f(0.0, 0.0, 0.0);
+        //std::cerr << "intersect " << std::endl;
+        
         for (int lightidx = 0; lightidx < sceneParser.getNumLights(); lightidx++)
         {
           Light* light = sceneParser.getLight(lightidx);
@@ -78,16 +78,16 @@ int main( int argc, char* argv[] )
           Vector3f lightColor;
           float distanceToLight;
           light -> getIllumination(ray.pointAtParameter(hit.getT()), dirToLight, lightColor, distanceToLight);
-          Vector3f diffuseColor = hit.getMaterial()->Shade( ray, hit,  dirToLight, lightColor);
-
-          pixel_color += diffuseColor;
+          Vector3f shade = hit.getMaterial()->Shade( ray, hit,  dirToLight, lightColor);
+          pixel_color += shade;
         }
-        pixel_color = hit.getMaterial()->getDiffuseColor()*ambientlight;
+        
+        pixel_color += hit.getMaterial()->getDiffuseColor()*ambientlight;
         image.SetPixel(x, y, pixel_color);
       }      
     } 
   } 
-  image.SaveImage("Sphere_demo.bmp");
+  image.SaveImage(argv[7]);
   return 0;
 }
 

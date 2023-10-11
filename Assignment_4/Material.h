@@ -27,33 +27,29 @@ public:
   }
     
 
-  Vector3f Shade( const Ray& ray, const Hit& hit,
-                  const Vector3f& dirToLight, const Vector3f& lightColor ) 
+  Vector3f Shade( const Ray& ray, const Hit& hit, const Vector3f& dirToLight, const Vector3f& lightColor ) 
     {
     Vector3f normal = hit.getNormal();
     Vector3f direction = ray.getDirection();
 
     // Specular shading
-    Vector3f R = (direction - 2.0 * Vector3f::dot(direction, normal)*normal).normalized();
-    float shading_intensity = pow(Vector3f::dot(dirToLight, R), shininess);
-    if(shading_intensity < 0){shading_intensity = 0;}
+    Vector3f R = (direction - 2.0 * Vector3f::dot(direction, normal)* normal).normalized();
+    float shading_intensity = pow(Vector3f::dot(R, dirToLight), shininess);
+    if (Vector3f::dot(R,  dirToLight) < 0){shading_intensity = 0;}
     Vector3f specular_component = shading_intensity * lightColor * specularColor;
 
     //Diffuse Shading
-    Vector3f final_diffuseColor = diffuseColor; 
     if(t.valid())
     {
-      final_diffuseColor = t(hit.texCoord[0], hit.texCoord[1]);
+      diffuseColor = t(hit.texCoord[0], hit.texCoord[1]);
     }
-    
 
 	  float LdotN = Vector3f::dot(normal, dirToLight);
-	  if (LdotN < 0){LdotN = 0;}
-    Vector3f diffuse_component = LdotN*lightColor * final_diffuseColor;
-    
-    
-    Vector3f c_pixel = diffuse_component + specular_component;
-    return c_pixel; 
+	  if (LdotN <= 0){LdotN = 0;}
+
+    Vector3f diffuse_component = LdotN*lightColor*diffuseColor;
+
+    return Vector3f(diffuse_component + specular_component); 
   }
 
   void loadTexture(const char * filename){

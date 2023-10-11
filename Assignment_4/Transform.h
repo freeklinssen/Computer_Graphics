@@ -12,15 +12,14 @@ public:
   Transform(){}
  Transform( const Matrix4f& m, Object3D* obj):o(obj)
  {
-  Matrix4f matrix = m;  
+    matrix = m;  
  }
 
   ~Transform(){}
 
   virtual bool intersect( const Ray& r , Hit& h , float tmin)
   {
-    float t=h.getT();
-
+    
     Vector4f origin4 = Vector4f(r.getOrigin(), 1.0f);
     Vector4f direction4 = Vector4f(r.getDirection(), 0.0f);
     
@@ -28,14 +27,15 @@ public:
     Vector3f transformed_direction = (matrix.inverse() * direction4).xyz();
 
     Ray transformed_ray = Ray(transformed_origin, transformed_direction);
-    o->intersect(transformed_ray, h, tmin);
+    
 
-    if(h.getT() != t)
-    {
+    if(o->intersect(transformed_ray, h, tmin)){    
       Vector4f normal4 = Vector4f(h.getNormal(), 0.0f);
-      Vector3f normal = (matrix.inverse().transposed() * normal4).xyz().normalized();
+      Vector3f normal = (matrix.inverse().transposed() * normal4).normalized().xyz().normalized();
       h.setNormal(normal);
+      return true;
     }
+    else{return false;}
   }
 
  protected:

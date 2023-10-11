@@ -11,10 +11,11 @@ class Plane: public Object3D
 {
 public:
 	Plane(){}
-	Plane( const Vector3f& n , float d , Material* material):Object3D(material)
+	Plane( const Vector3f& n , float d , Material* m):Object3D(m)
 	{
 		normal = n;
 		D = d;
+		material = m;
 	}
 
 	~Plane(){}
@@ -29,19 +30,23 @@ public:
 		float denominator = Vector3f::dot(normal, direction);
 
 
-		if(denominator > 0.02)
+		if(denominator != 0)
 		{
+			
 			// calculation for intersection with a plain
-			float t_new = (Vector3f::dot(normal, origin)+D)/denominator;
+			float t_new = -1*(Vector3f::dot(normal, origin)-D)/denominator;
 
-			if(t_new<t && t_new>tmin)
+			if( t_new>tmin && t_new<t)
 			{
 				h.set(t_new, material, normal);
+				return true;
 			}
+			else{return false;}
 		}	
 	}
 
 protected:
+ 	Material* material;
 	Vector3f normal; 
 	float D;
 

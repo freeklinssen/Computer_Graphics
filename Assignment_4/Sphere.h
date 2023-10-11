@@ -16,10 +16,10 @@ public:
 		//unit ball at the center
 	}
 
-	Sphere( Vector3f center, float radius, Material* material):Object3D(material){
+	Sphere( Vector3f center, float radius, Material* material):Object3D(material)
+	{
 		Center = center;
 		Radius = radius;
-
 		// currently only suport a sphere around the center (0,0,0).
 		//translate the sphere around an other center than the (0,0,0) point.
 	}	
@@ -31,9 +31,8 @@ public:
 		float t = h.getT();
 
 		Vector3f normal;
-		Vector3f origin = r.getOrigin();
+		Vector3f origin = (r.getOrigin()-Center);
         Vector3f direction = r.getDirection();
-
 		// ABC formula
 		float a = Vector3f::dot(direction, direction);  // should always be one since direction is normalized
 		float b = 2 * Vector3f::dot(origin, direction);
@@ -41,37 +40,46 @@ public:
 
 		float discriminant = sqrt(b*b-4*a*c);
 
+
 		if(discriminant >= 0)
 			//does discriminant == 0 realy happen??
 			// don't think we need to implement this, in that case we just treat it as < 0
-		
 		{
 			float t_1 = (-b+discriminant)/(2*a);
 			float t_2 = (-b-discriminant)/(2*a);
 
+			bool Bool = false;
 			if(t_1>tmin && t_2>tmin)
 			{
 				if(t_1<t_2 && t_1<t)
 				{
-					normal = (Center-r.pointAtParameter(t_1)).normalized();
+					normal = (r.pointAtParameter(t_1)-Center).normalized();
 					h.set(t_1, material, normal);
+					Bool = true;
 				}
 				else if(t_2<t)
 				{
-					normal = (Center-r.pointAtParameter(t_2)).normalized();
+					normal = (r.pointAtParameter(t_2)-Center).normalized();
 					h.set(t_2, material, normal);
+					Bool = true;
+
 				}
 			}
 			else if(t_1>tmin && t_1<t)
 			{
-				normal = (Center-r.pointAtParameter(t_1)).normalized();
+				normal = (r.pointAtParameter(t_1)-Center).normalized();
 				h.set(t_1, material, normal);
+					Bool = true;
+
 			}	
 			else if(t_2>tmin && t_2<t)
 			{
-				normal = (Center-r.pointAtParameter(t_2)).normalized();
+				normal = (r.pointAtParameter(t_2)-Center).normalized();
 				h.set(t_2, material, normal);
+					Bool = true;
+
 			} 
+		 	return Bool;
 		}
 	}
 

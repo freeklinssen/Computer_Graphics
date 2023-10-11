@@ -11,12 +11,11 @@ class Material;
 class Hit
 {
 public:
-
     // constructors
     Hit()
     {
         material = NULL;
-		t = FLT_MAX;
+		t = numeric_limits<float>::infinity();
 		hasTex=false;
     }
 

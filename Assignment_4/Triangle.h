@@ -30,9 +30,6 @@ public:
 		float t=h.getT();
 		Vector3f origin = r.getOrigin();
         Vector3f direction = r.getDirection();
-		
-		//temp
-		Vector3f normal;
 
 		Matrix3f M = Matrix3f(a[0]-b[0], a[0]-c[0], direction[0],
 							  a[1]-b[1], a[1]-c[1], direction[1],
@@ -55,10 +52,17 @@ public:
 		float gamma = gamma_matrix.determinant() / M.determinant();
 
 
-		if(0<=beta && beta<=1 && 0<=gamma && gamma<=1 && (beta+gamma)<=1 && tmin<t_new && t_new<t)
+		if(0<beta && beta<1 && 0<gamma && gamma<1 && (beta+gamma)<1 && tmin<t_new && t_new<t)
 		{
+			Vector3f normal;
+			normal = ((1-beta-gamma)* normals[0] + beta*normals[1] + gamma*normals[2]);
+			normal = normal.normalized();
 			h.set(t_new, material, normal);
+			h.setTexCoord(((1-beta-gamma)* texCoords[0] + beta*texCoords[1] + gamma*texCoords[2]));
+			
+			return true;
 		}
+		else{return false;} 
 	}
 
 	bool hasTex;

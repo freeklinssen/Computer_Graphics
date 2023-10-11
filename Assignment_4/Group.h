@@ -31,19 +31,15 @@ public:
 
   virtual bool intersect( const Ray& r , Hit& h , float tmin ) 
   {
+    bool Bool = false;
     for(int i=0; i<Num_objects; i++)
     {
-      objectList[i]->intersect(r, h, tmin);
+      if(objectList[i]->intersect(r, h, tmin)){Bool = true;}
     }
-
-    if(h.getMaterial()!= NULL)
-    {
-      return true;
-    }
-    else{return false;}
+    return Bool;
   }
 	
-  void addObject( int index ,Object3D* obj )
+  void addObject(int index, Object3D* obj)
   {
     objectList.push_back(obj);
   }
