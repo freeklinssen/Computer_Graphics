@@ -27,12 +27,10 @@ int main( int argc, char* argv[] )
     {
       std::cout << "Argument " << argNum << " is: " << argv[argNum] << std::endl;
     }
-	
     
   // First, parse the scene using SceneParser.
   SceneParser sceneParser = SceneParser(argv[2]);
   
-  // this one are needed for the first sphere
   Camera* camera = sceneParser.getCamera();
   Group* group = sceneParser.getGroup();
 
@@ -61,7 +59,7 @@ int main( int argc, char* argv[] )
 
       Vector2f point = Vector2f(x_normalized, y_normalized);
 
-      //shout ray 
+      //shoot ray 
       Ray ray = camera -> generateRay(point);
       float tmin = camera -> getTMin();
       Hit hit;
@@ -69,7 +67,6 @@ int main( int argc, char* argv[] )
       Vector3f pixel_color = Vector3f(0.0, 0.0, 0.0);
       if(group -> intersect(ray, hit, tmin))
       {
-        //std::cerr << "intersect " << std::endl;
         
         for (int lightidx = 0; lightidx < sceneParser.getNumLights(); lightidx++)
         {

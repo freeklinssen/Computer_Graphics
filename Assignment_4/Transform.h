@@ -27,7 +27,6 @@ public:
     Vector3f transformed_direction = (matrix.inverse() * direction4).xyz();
 
     Ray transformed_ray = Ray(transformed_origin, transformed_direction);
-    
 
     if(o->intersect(transformed_ray, h, tmin)){    
       Vector4f normal4 = Vector4f(h.getNormal(), 0.0f);

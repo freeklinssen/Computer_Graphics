@@ -54,9 +54,7 @@ public:
 
 		if(0<beta && beta<1 && 0<gamma && gamma<1 && (beta+gamma)<1 && tmin<t_new && t_new<t)
 		{
-			Vector3f normal;
-			normal = ((1-beta-gamma)* normals[0] + beta*normals[1] + gamma*normals[2]);
-			normal = normal.normalized();
+			Vector3f normal = ((1-beta-gamma)* normals[0] + beta*normals[1] + gamma*normals[2]).normalized();
 			h.set(t_new, material, normal);
 			h.setTexCoord(((1-beta-gamma)* texCoords[0] + beta*texCoords[1] + gamma*texCoords[2]));
 			

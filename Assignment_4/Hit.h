@@ -67,10 +67,12 @@ public:
         normal = n;
     }
 
-	void setTexCoord(const Vector2f & coord){
+	void setTexCoord(const Vector2f & coord)
+    {
 		texCoord = coord;
 		hasTex = true;
 	}
+    
 	bool hasTex;
 	Vector2f texCoord;
 

@@ -36,25 +36,25 @@ public:
     Vector3f R = (direction - 2.0 * Vector3f::dot(direction, normal)* normal).normalized();
     float shading_intensity = pow(Vector3f::dot(R, dirToLight), shininess);
     if (Vector3f::dot(R,  dirToLight) < 0){shading_intensity = 0;}
+
     Vector3f specular_component = shading_intensity * lightColor * specularColor;
 
     //Diffuse Shading
-    if(t.valid())
-    {
-      diffuseColor = t(hit.texCoord[0], hit.texCoord[1]);
-    }
-
+    if(t.valid()){ diffuseColor = t(hit.texCoord[0], hit.texCoord[1]);}
 	  float LdotN = Vector3f::dot(normal, dirToLight);
 	  if (LdotN <= 0){LdotN = 0;}
 
     Vector3f diffuse_component = LdotN*lightColor*diffuseColor;
 
+
     return Vector3f(diffuse_component + specular_component); 
   }
 
-  void loadTexture(const char * filename){
+  void loadTexture(const char * filename)
+  {
     t.load(filename);
   }
+
  protected:
   Vector3f diffuseColor;
   Vector3f specularColor;

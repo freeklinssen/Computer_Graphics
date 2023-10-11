@@ -20,8 +20,6 @@ public:
 	{
 		Center = center;
 		Radius = radius;
-		// currently only suport a sphere around the center (0,0,0).
-		//translate the sphere around an other center than the (0,0,0) point.
 	}	
 
 	~Sphere(){}
@@ -33,6 +31,7 @@ public:
 		Vector3f normal;
 		Vector3f origin = (r.getOrigin()-Center);
         Vector3f direction = r.getDirection();
+
 		// ABC formula
 		float a = Vector3f::dot(direction, direction);  // should always be one since direction is normalized
 		float b = 2 * Vector3f::dot(origin, direction);

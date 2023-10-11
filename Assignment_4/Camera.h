@@ -22,11 +22,6 @@ protected:
 	Vector3f direction;
 	Vector3f up;
 	Vector3f horizontal;
-	
-	//center: 0 0 10
-    //direction: 0 0 -1  
-    //up: 0 1 0
-    //angle: 20
 };
 
 
@@ -46,13 +41,13 @@ public:
 
 	virtual Ray generateRay( const Vector2f& point)
 	{
-		// this might be wrong but the principle is right
 		Vector3f direction = Vector3f((u*point[0]+ v*point[1]) + w*distance).normalized();
 		Ray ray = Ray(origin, direction);
 		return ray;	
 	}
 
-	virtual float getTMin() const { 
+	virtual float getTMin() const 
+	{ 
 		return 0.0f;
 	}
 

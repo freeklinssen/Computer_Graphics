@@ -26,13 +26,10 @@ public:
 		Vector3f origin = r.getOrigin();
         Vector3f direction = r.getDirection();
 
-		 
+
 		float denominator = Vector3f::dot(normal, direction);
-
-
 		if(denominator != 0)
 		{
-			
 			// calculation for intersection with a plain
 			float t_new = -1*(Vector3f::dot(normal, origin)-D)/denominator;
 
