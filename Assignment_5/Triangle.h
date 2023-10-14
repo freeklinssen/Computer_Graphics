@@ -52,7 +52,7 @@ public:
 		float gamma = gamma_matrix.determinant() / M.determinant();
 
 
-		if(0<beta && beta<=1 && 0<=gamma && gamma<=1 && (beta+gamma)<=1 && tmin<t_new && t_new<t)
+		if(0<=beta && beta<=1 && 0<=gamma && gamma<=1 && (beta+gamma)<=1 && tmin<t_new && t_new<t)
 		{
 			Vector3f normal = ((1-beta-gamma)* normals[0] + beta*normals[1] + gamma*normals[2]).normalized();
 			h.set(t_new, material, normal);
@@ -60,7 +60,7 @@ public:
 			
 			return true;
 		}
-		else{return false;}
+		else{return false;} 
 	}
 
 	bool hasTex;

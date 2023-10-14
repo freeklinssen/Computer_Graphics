@@ -7,6 +7,7 @@
 
 #include "SceneParser.h"
 #include "Image.h"
+#include "RayTracer.h"
 #include "Camera.h"
 #include <string.h>
 
@@ -29,13 +30,15 @@ int main( int argc, char* argv[] )
     }
     
   // First, parse the scene using SceneParser.
-  SceneParser sceneParser = SceneParser(argv[2]);
+  SceneParser* sceneParser = new SceneParser(argv[2]);
   
-  Camera* camera = sceneParser.getCamera();
-  Group* group = sceneParser.getGroup();
+  Camera* camera = sceneParser->getCamera();
+  Group* group = sceneParser->getGroup();
 
-  Vector3f ambientlight = sceneParser.getAmbientLight();
-  Vector3f backgroundcolor = sceneParser.getBackgroundColor();
+  Vector3f ambientlight = sceneParser->getAmbientLight();
+
+  RayTracer ray_tracer = RayTracer(sceneParser, group, 4);
+  
 
   // Then loop over each pixel in the image, shooting a ray
   // through that pixel and finding its intersection with
@@ -47,8 +50,6 @@ int main( int argc, char* argv[] )
   //initialize the image with its size
   Image image( width , hight);
 
-  image.SetAllPixels(backgroundcolor);
-
   for(int x=0; x< width; x++)
   {
     for(int y=0; y<hight; y++)
@@ -57,29 +58,16 @@ int main( int argc, char* argv[] )
       float x_normalized = (float(x)-0.5*width)/(0.5*width);
       float y_normalized = (float(y)-0.5*hight)/(0.5*hight); 
 
-      Vector2f point = Vector2f(x_normalized, y_normalized);
-
       //shoot ray 
+      Vector2f point = Vector2f(x_normalized, y_normalized);
       Ray ray = camera -> generateRay(point);
       float tmin = camera -> getTMin();
       Hit hit;
-      
-      Vector3f pixel_color = Vector3f(0.0, 0.0, 0.0);
-      if(group -> intersect(ray, hit, tmin))
-      {
-        for (int lightidx = 0; lightidx < sceneParser.getNumLights(); lightidx++)
-        {
-          Light* light = sceneParser.getLight(lightidx);
-          Vector3f dirToLight;
-          Vector3f lightColor;
-          float distanceToLight;
-          light -> getIllumination(ray.pointAtParameter(hit.getT()), dirToLight, lightColor, distanceToLight);
-          Vector3f shade = hit.getMaterial()->Shade( ray, hit,  dirToLight, lightColor);
-          pixel_color += shade;
-        }  
-        pixel_color += hit.getMaterial()->getDiffuseColor()*ambientlight;
-        image.SetPixel(x, y, pixel_color);
-      }      
+      int bounces = 0;
+
+      // the new loop:
+      Vector3f pixel_color = ray_tracer.TraceRay(ray, hit, tmin, bounces);
+      image.SetPixel(x, y, pixel_color);
     } 
   } 
   image.SaveImage(argv[7]);
