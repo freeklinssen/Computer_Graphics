@@ -44,6 +44,7 @@ public:
         // the direction to the light is the opposite of the
         // direction of the directional light source
         dir = -direction;
+        distanceToLight = numeric_limits<float>::infinity();
         col = color;
     }
 
@@ -76,6 +77,7 @@ public:
         // the direction to the light is the opposite of the
         // direction of the directional light source
 		dir = (position-p);
+        distanceToLight = dir.abs();
 		dir = dir/dir.abs();
         col = color;
     }

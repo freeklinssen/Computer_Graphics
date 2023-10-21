@@ -17,6 +17,8 @@ void intersectCall(int idx, void ** arg)
 }
 bool Mesh::intersect( const Ray& r , Hit& h , float tmin )
 {
+	
+	/*
 		bool result = false;
 	for( unsigned int i = 0 ; i < t.size() ; i++){
 		Triangle triangle(v[t[i][0]],
@@ -34,6 +36,8 @@ bool Mesh::intersect( const Ray& r , Hit& h , float tmin )
 		result |= triangle.intersect( r , h , tmin);
 	}
 	return result;
+	*/
+	
 
 	
 	ray = &r;
@@ -158,6 +162,22 @@ if (SMOOTH){
 	}
 }
 else{
+
+	n.resize(t.size());
+	for(unsigned int ii=0; ii<t.size(); ii++) {
+		Vector3f a = v[t[ii][1]] - v[t[ii][0]];
+		Vector3f b = v[t[ii][2]] - v[t[ii][0]];
+		b=Vector3f::cross(a,b);
+	  n[ii]=b.normalized();
+	}
+}
+}
+
+/*
+previous code after else above
+
+
+
 	n.resize(v.size());
   for(unsigned int ii=0; ii<t.size(); ii++) {
     Vector3f a = v[t[ii][1]] - v[t[ii][0]];
@@ -170,20 +190,6 @@ else{
   for(unsigned int ii=0; ii<v.size(); ii++) {
 	  n[ii] = n[ii]/ n[ii].abs();
   }
-
-}
-}
-
-/*
-previous code after else above
-
-n.resize(t.size());
-	for(unsigned int ii=0; ii<t.size(); ii++) {
-		Vector3f a = v[t[ii][1]] - v[t[ii][0]];
-		Vector3f b = v[t[ii][2]] - v[t[ii][0]];
-		b=Vector3f::cross(a,b);
-	  n[ii]=b.normalized();
-	}
 */
 
 

@@ -48,7 +48,7 @@ public:
 
 	virtual float getTMin() const 
 	{ 
-		return 0.0f;
+		return 0.05f;
 	}
 
 private:

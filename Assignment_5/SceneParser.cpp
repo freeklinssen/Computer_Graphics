@@ -220,9 +220,9 @@ Light* SceneParser::parsePointLight() {
         }else if (strcmp(token, "color")==0) {
           color = readVector3f();
         }
-        //else if(strcmp(token,"falloff")==0){    
-        //  falloff = readFloat();
-        //}
+        else if(strcmp(token,"falloff")==0){    
+          falloff = readFloat();
+        }
 
         else{
            assert (!strcmp(token, "}"));
