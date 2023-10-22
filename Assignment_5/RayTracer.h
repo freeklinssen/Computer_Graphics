@@ -63,8 +63,9 @@ public:
             return pixel_color;
             }
 
-            // Reflection
-            if(hit.getMaterial()->getShininess() > 0|| hit.getMaterial()->checkNoise())
+            // Reflection Depands on when you want to have reflection
+            if(true)
+            //if(hit.getMaterial()->getShininess() > 0|| hit.getMaterial()->checkNoise())
             {
                 Vector3f reflectionDirection = mirrorReflectionAngel( hit.getNormal(), ray.getDirection());
                 Ray new_ray = Ray(ray.pointAtParameter(hit.getT()), reflectionDirection);
