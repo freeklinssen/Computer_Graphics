@@ -66,7 +66,7 @@ namespace
     }
     else if(strcmp(argv[1], "clothSystem")==0)
     {
-        system = new clothSystem(18, 18);		   
+        system = new clothSystem(16, 16);		   
     }
     // Default clothSystem
     else

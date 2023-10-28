@@ -21,9 +21,12 @@ public:
 	
 	void draw();
 
+	Vector3f getNormal(int verticeIndex);
+
 protected:
 
 	vector<Vector4f> particles;
+	vector<vector<Tuple3u> > adjecentFaces;
 	vector<Vector4f> springs;
 	vector<Tuple3u> faces;
 

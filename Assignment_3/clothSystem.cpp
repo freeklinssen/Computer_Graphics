@@ -12,12 +12,13 @@ clothSystem::clothSystem(int cloth_width,int cloth_hight):PendulumSystem(cloth_w
 	draw_faces = true;
 
 	// initialize particles
-	int start_hight = 4.0f;
+	int start_hight = 3.0f;
 	float rest_lenght = 0.10f;
 	float spring_cons = 300.0f;
 	float space_between_particles = 0.10;
 	float x;
 	float z;
+	adjecentFaces.resize(cloth_width * cloth_hight);
 
 	for(int i=0; i<cloth_width; i++)
 	{
@@ -73,12 +74,15 @@ clothSystem::clothSystem(int cloth_width,int cloth_hight):PendulumSystem(cloth_w
 			// faces
 			if(i < cloth_width-1 && j < cloth_hight-1)
 			{
-			// pointing backwards
-			faces.push_back(Tuple3u(int(i*cloth_width+j), int((i+1)*cloth_width+j), int(i*cloth_width+j+1)));
-			faces.push_back(Tuple3u(int(i*cloth_width+j+1), int((i+1)*cloth_width+j), int((i+1)*cloth_width+j+1)));	
-			// pointing forward
-			faces.push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));
-			faces.push_back(Tuple3u(int(i*cloth_width+j+1), int((i+1)*cloth_width+(j+1)), int((i+1)*cloth_width+j)));	
+			faces.push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+j+1), int((i+1)*cloth_width+j)));
+			adjecentFaces[int(i*cloth_width+j)].push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));
+			adjecentFaces[int(i*cloth_width+(j+1))].push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));	
+			adjecentFaces[int((i+1)*cloth_width+j)].push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));	
+
+			faces.push_back(Tuple3u(int(i*cloth_width+j+1), int((i+1)*cloth_width+(j+1)), int((i+1)*cloth_width+j)));
+			adjecentFaces[int(i*cloth_width+j+1)].push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));
+			adjecentFaces[int((i+1)*cloth_width+(j+1))].push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));	
+			adjecentFaces[int((i+1)*cloth_width+j)].push_back(Tuple3u(int(i*cloth_width+j), int(i*cloth_width+(j+1)), int((i+1)*cloth_width+j)));	
 			}
 		}
 	}

@@ -10,7 +10,7 @@ void PendulumSystem::initPendulum()
 {
 	for (int i = 0; i < m_numParticles; i++){
 		// for this system, we care about the position and the velocity
-		m_vVecState.push_back(Vector3f(particles[i][0], particles[i][1], particles[i][2]));
+		m_vVecState.push_back(particles[i].xyz());
 		// velocity
 		m_vVecState.push_back(Vector3f(0.0f, 0.0f, 0.0f));
 	}
@@ -68,27 +68,42 @@ void PendulumSystem::draw()
 {
 	if(draw_faces == true)
 	{
+		glBegin(GL_TRIANGLES);
 		for(int i = 0; i < faces.size(); i++)
 		{
-			Vector3f Edge1;
-			Vector3f Edge2;
-			Vector3f normal;
+			//Edge1 = getState()[2*faces[i][1]] - getState()[2*faces[i][0]];
+			//Edge2 = getState()[2*faces[i][2]] - getState()[2*faces[i][0]];
 
-			Edge1 = getState()[2*faces[i][1]] - getState()[2*faces[i][0]];
-			Edge2 = getState()[2*faces[i][2]] - getState()[2*faces[i][0]];
-
-			normal = Vector3f::cross(Edge1, Edge2).normalized();
+			//normal = Vector3f::cross(Edge1, Edge2).normalized();
 			//normal *= -1;
-			//glEnable(GL_CULL_FACE);
-			//glCullFace(GL_BACK);
 
-			glBegin(GL_TRIANGLES);
-			glNormal3d(normal[0], normal[1], normal[2]);
+			Vector3f normal_1 = getNormal(faces[i][0]);
+			Vector3f normal_2 = getNormal(faces[i][1]);
+			Vector3f normal_3 = getNormal(faces[i][2]);
+
+			// frontside
+			glNormal3d(normal_1[0], normal_1[1], normal_1[2]);
 			glVertex3d(getState()[2*faces[i][0]][0], getState()[2*faces[i][0]][1], getState()[2*faces[i][0]][2]);
+
+			glNormal3d(normal_2[0], normal_2[1], normal_2[2]);
 			glVertex3d(getState()[2*faces[i][1]][0], getState()[2*faces[i][1]][1], getState()[2*faces[i][1]][2]);
+
+			glNormal3d(normal_3[0], normal_3[1], normal_3[2]);
 			glVertex3d(getState()[2*faces[i][2]][0], getState()[2*faces[i][2]][1], getState()[2*faces[i][2]][2]);
-			glEnd;
+
+			// backside
+			glNormal3d(-normal_1[0], -normal_1[1], -normal_1[2]);
+			glVertex3d(getState()[2*faces[i][0]][0], getState()[2*faces[i][0]][1], getState()[2*faces[i][0]][2]);
+
+			glNormal3d(-normal_3[0], -normal_3[1], -normal_3[2]);
+			glVertex3d(getState()[2*faces[i][2]][0], getState()[2*faces[i][2]][1], getState()[2*faces[i][2]][2]);
+
+			glNormal3d(-normal_2[0], -normal_2[1], -normal_2[2]);
+			glVertex3d(getState()[2*faces[i][1]][0], getState()[2*faces[i][1]][1], getState()[2*faces[i][1]][2]);
+
 		}
+		glEnd;
+		
 	}
 
 	else
@@ -120,4 +135,22 @@ void PendulumSystem::draw()
     		}
 		}	
 	}
+}
+
+Vector3f PendulumSystem::getNormal(int verticeIndex)
+{
+	Vector3f Edge1;
+	Vector3f Edge2;
+	Vector3f normal;
+	Vector3f result = Vector3f(0.0f, 0.0f, 0.0f);
+	vector<Tuple3u> faces = adjecentFaces[verticeIndex];
+
+	for (int v=0; v< faces.size(); v++)
+	{
+		Edge1 = getState()[2*faces[v][1]] - getState()[2*faces[v][0]];
+		Edge2 = getState()[2*faces[v][2]] - getState()[2*faces[v][0]];
+		normal = Vector3f::cross(Edge1, Edge2).normalized();
+		result += normal;
+	}
+	return result/faces.size();
 }
